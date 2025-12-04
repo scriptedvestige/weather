@@ -40,7 +40,6 @@ class Loader:
             "database": self.db_name,
             "user": self.db_user,
             "password": self.db_password
-
         }
 
     def wfc_config(self):

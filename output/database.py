@@ -19,7 +19,7 @@ class Inserter:
         """Build the insert statement for work forecast data."""
         return """INSERT into work_forecast 
             (updated, starttime, isdaytime, temp, precip, windspeed, winddir, detail, icon) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     
     def wobs_statement(self):
         """Build the insert statement for work observation data."""
