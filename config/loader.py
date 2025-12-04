@@ -50,14 +50,6 @@ class Loader:
             "table": self.config["work_fc"]["table"]
         }
     
-    def wobs_config(self):
-        """Return the work observations configuration."""
-        return {
-            "header": self.config["header"],
-            "url": self.config["work_obs"]["url"],
-            "table": self.config["work_obs"]["table"]
-        }
-    
     def hfc_config(self):
         """Return the home forecast configuration."""
         return {

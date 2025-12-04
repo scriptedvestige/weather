@@ -1,4 +1,4 @@
-# NWS Forecast Scraper
+# Weather Data Ingestion
 
 This is currently a very rough start of a new project.  This system will ingest weather forecast data from NWS for multiple zones as well as observation data from one of the zones then save the parsed data from the API response to a database.
 

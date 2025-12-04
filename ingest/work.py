@@ -56,49 +56,6 @@ class Forecast:
         """Run the forecast scraper and return the forecast data."""
         self.call_api()
         return self.parse_data(self.work_fc)
-
-
-class Observations():
-    """
-    Scrape the NWS observed conditions API for work.
-    Brimstone, fire.
-    """
-    def __init__(self, config):
-        # Date
-        self.today = iso_format()
-        # Config
-        self.header = config["header"]
-        self.url = config["url"]
-        self.table = config["table"]
-        #Data
-        self.wobs = {}
-    
-    def call_api(self):
-        """Call API and write data to forecast.txt"""
-        api_data = requests.get(url=self.url, headers=self.header).json()
-        self.wobs = api_data["properties"]["periods"]
-
-    def parse_data(self, data):
-        """Parse the API response data."""
-        fc = []
-        for entry in data:
-            row = []
-            row.append(current_date_time())
-            row.append(entry["startTime"])
-            row.append(entry["isDaytime"])
-            row.append(entry["temperature"])
-            row.append(entry["probabilityOfPrecipitation"]["value"])
-            row.append(entry["windSpeed"].split()[-2])
-            row.append(entry["windDirection"])
-            row.append(entry["detailedForecast"])
-            row.append(entry["icon"])
-            fc.append(row)
-        return fc
-    
-    def run(self):
-        """Run the work observed weather scraper and return the observed weather data."""
-        self.call_api()
-        return self.parse_data(self.wobs)
     
 
 if __name__ == "__main__":
@@ -106,6 +63,3 @@ if __name__ == "__main__":
     config = loader.Loader()
     wfc = Forecast(config.wfc_config())
     wfc.run()
-
-    # wobs = Observations()
-    # wobs.run()

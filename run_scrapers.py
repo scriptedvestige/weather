@@ -16,8 +16,7 @@ def nom_nom_nom():
     # Insert data into database
     db.insert(statement=db.wfc_statement(),data=wfc_data)
     
-    """ config.wobs_config()
-    config.hfc_config() """
+    """ config.hfc_config() """
 
 
 if __name__ == "__main__":
