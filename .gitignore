@@ -1,0 +1,6 @@
+*.json
+**/__pycache__/
+config/.env
+output/
+sql/
+w_venv/
