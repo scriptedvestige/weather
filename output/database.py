@@ -3,8 +3,8 @@ import sys
 sys.path.append(".")
 
 from utils.file_utils import log_path
+from datetime import datetime
 import psycopg2
-import datetime
 import traceback
 
 
@@ -47,7 +47,7 @@ class Inserter:
             connection.close()
         except Exception as e:
             with open(self.LOG_PATH, "a") as log:
-                    log.write(f"\n[{datetime.now()}] Error in {statement}:\n")
+                    log.write(f"\n[{datetime.now()}] Error inserting into table: {statement.split()[2]}\n")
                     log.write(f"{e}\n")
                     log.write(traceback.format_exc())
                     log.write("\n" + "-"*60 + "\n")
