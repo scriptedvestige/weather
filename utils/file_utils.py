@@ -8,6 +8,10 @@ def check_file(path):
     """Check if a file path exists."""
     pass
 
+def log_path():
+    """Path for orchestrator run log."""
+    return root_dir / "run.log"
+
 def config_path(name):
     """Configuration directory path."""
     return root_dir / "config" / f"{name}_config.json"
