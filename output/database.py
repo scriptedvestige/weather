@@ -2,12 +2,16 @@
 import sys
 sys.path.append(".")
 
+from utils.file_utils import log_path
 import psycopg2
+import datetime
+import traceback
 
 
 class Inserter:
     """Inject data fed to the module into the appropriate database table."""
     def __init__(self, config):
+        self.LOG_PATH = log_path()
         # DB Config
         self.db_host = config["host"]
         self.db_port = config["port"]
@@ -29,17 +33,24 @@ class Inserter:
 
     def insert(self, statement, data):
         """Connect to the database and insert data."""
-        connection = psycopg2.connect(
-            user = self.db_user,
-            password = self.db_password,
-            host = self.db_host,
-            port = self.db_port,
-            database = self.db_name)
-        cursor = connection.cursor()
-        cursor.executemany(statement, data)
-        connection.commit()
-        cursor.close()
-        connection.close()
+        try:
+            connection = psycopg2.connect(
+                user = self.db_user,
+                password = self.db_password,
+                host = self.db_host,
+                port = self.db_port,
+                database = self.db_name)
+            cursor = connection.cursor()
+            cursor.executemany(statement, data)
+            connection.commit()
+            cursor.close()
+            connection.close()
+        except Exception as e:
+            with open(self.LOG_PATH, "a") as log:
+                    log.write(f"\n[{datetime.now()}] Error in {statement}:\n")
+                    log.write(f"{e}\n")
+                    log.write(traceback.format_exc())
+                    log.write("\n" + "-"*60 + "\n")
 
 
 if __name__ == "__main__":
