@@ -10,13 +10,16 @@ def nom_nom_nom():
     config = Loader()
     # Create database injector
     db = database.Inserter(config.db_config())
-    # Create and run work scrapers
+    # Create and run work scraper
     wfc = work.Forecast(config.wfc_config())
     wfc_data = wfc.run()
     # Insert data into database
-    db.insert(statement=db.wfc_statement(),data=wfc_data)
-    
-    """ config.hfc_config() """
+    db.insert(statement=db.wfc_statement(), data=wfc_data)
+    # Create and run home scraper
+    hfc = home.Forecast(config.hfc_config())
+    hfc_data = hfc.run()
+    # Insert data into database
+    db.insert(statement=db.hfc_statement(), data=hfc_data)
 
 
 if __name__ == "__main__":

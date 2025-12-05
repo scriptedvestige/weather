@@ -23,7 +23,9 @@ class Inserter:
 
     def hfc_statement(self):
         """Build the insert statement for home forecast data."""
-        pass
+        return """INSERT into home_forecast 
+            (updated, starttime, isdaytime, temp, precip, windspeed, winddir, humidity, shortfc) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
 
     def insert(self, statement, data):
         """Connect to the database and insert data."""
