@@ -27,12 +27,12 @@ class Forecast():
         api_data = requests.get(url=self.url, headers=self.header).json()
         self.home_fc = api_data["properties"]["periods"]
         filename = forecast_output(zone="home", date=filename_format())
-        self.save_file(filename=filename, forecast=self.home_fc)
+        # self.save_file(filename=filename, forecast=self.home_fc)
 
-    def save_file(self, filename, forecast):
-        """Save forcast data to json file."""
+    ''' def save_file(self, filename, forecast):
+        """Save forcast data to json file.  For testing and debug."""
         with open(filename, "w") as file:
-            json.dump(forecast, file, indent=4)
+            json.dump(forecast, file, indent=4) '''
 
     def parse_data(self, data):
         """Parse the API response data."""
