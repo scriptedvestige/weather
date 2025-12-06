@@ -3,3 +3,4 @@
 config/.env
 sql/
 w_venv/
+run.sh
