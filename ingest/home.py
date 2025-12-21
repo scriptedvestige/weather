@@ -23,7 +23,7 @@ class Forecast():
         self.home_fc = {}
 
     def call_api(self):
-        """Call API and write data to forecast.txt"""
+        """Call API and write data to json file."""
         api_data = requests.get(url=self.url, headers=self.header).json()
         self.home_fc = api_data["properties"]["periods"]
         filename = forecast_output(zone="home", date=filename_format())

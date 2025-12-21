@@ -5,7 +5,7 @@ from functools import wraps
 
 from utils.file_utils import log_path
 from config.loader import Loader
-from ingest import work, home
+from ingest import work, home, alerts
 from output import database
 
 LOG_PATH = log_path()
@@ -40,6 +40,11 @@ def run_hfc(config):
     hfc = home.Forecast(config)
     return hfc.run()
 
+@safe_run("Alerts")
+def run_alerts(config):
+    severe = alerts.Alerts(config)
+    severe.run()
+
 def nom_nom_nom():
     """I'm hongry!"""
     # Create config loader object
@@ -52,6 +57,8 @@ def nom_nom_nom():
 
     hfc_data = run_hfc(config.hfc_config())
     db.insert(statement=db.hfc_statement(), data=hfc_data)
+
+    run_alerts(config.alerts_config())
 
 
 if __name__ == "__main__":

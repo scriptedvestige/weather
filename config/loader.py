@@ -57,6 +57,14 @@ class Loader:
             "url": self.config["home_fc"]["url"],
             "table": self.config["home_fc"]["table"]
         }
+    
+    def alerts_config(self):
+        """Return the alerts configuration."""
+        return {
+            "header": self.config["header"],
+            "url": self.config["alerts"]["url"],
+            "table": self.config["alerts"]["table"]
+        }
         
 
 if __name__ == "__main__":
