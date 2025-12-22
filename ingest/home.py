@@ -26,10 +26,10 @@ class Forecast():
         """Call API and write data to json file."""
         api_data = requests.get(url=self.url, headers=self.header).json()
         self.home_fc = api_data["properties"]["periods"]
-        filename = forecast_output(zone="home", date=filename_format())
-        # self.save_file(filename=filename, forecast=self.home_fc)
+        ''' filename = forecast_output(zone="home", date=filename_format())
+        self.save_file(filename=filename, forecast=self.home_fc)
 
-    ''' def save_file(self, filename, forecast):
+    def save_file(self, filename, forecast):
         """Save forcast data to json file.  For testing and debug."""
         with open(filename, "w") as file:
             json.dump(forecast, file, indent=4) '''
@@ -59,7 +59,7 @@ class Forecast():
 
 if __name__ == "__main__":
     ### Testing ###
-    """ from config import loader
+    from config import loader
     config = loader.Loader()
     hfc = Forecast(config.hfc_config())
-    hfc.run() """
+    hfc.run()

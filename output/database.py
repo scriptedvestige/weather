@@ -30,6 +30,12 @@ class Inserter:
         return """INSERT into home_forecast 
             (updated, starttime, isdaytime, temp, precip, windspeed, winddir, humidity, shortfc) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+    
+    def swa_statement(self):
+        """Build the insert statement for the severe weather alerts."""
+        return """INSERT into alerts 
+            (updated, onset, ends, severity, certainty, event, headline, description, instruction) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
 
     def insert(self, statement, data):
         """Connect to the database and insert data."""

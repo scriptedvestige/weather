@@ -24,6 +24,7 @@ def safe_run(module_name):
                     log.write(f"{e}\n")
                     log.write(traceback.format_exc())
                     log.write("\n" + "-"*60 + "\n")
+                raise
         return wrapper
     return decorator
 
@@ -42,8 +43,8 @@ def run_hfc(config):
 
 @safe_run("Alerts")
 def run_alerts(config):
-    severe = alerts.Alerts(config)
-    severe.run()
+    swa = alerts.SevereWeather(config)
+    return swa.run()
 
 def nom_nom_nom():
     """I'm hongry!"""
@@ -58,7 +59,9 @@ def nom_nom_nom():
     hfc_data = run_hfc(config.hfc_config())
     db.insert(statement=db.hfc_statement(), data=hfc_data)
 
-    run_alerts(config.alerts_config())
+    swa_data = run_alerts(config.alerts_config())
+    if swa_data != None:
+        db.insert(statement=db.swa_statement(), data=swa_data)
 
 
 if __name__ == "__main__":
