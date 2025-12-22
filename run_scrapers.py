@@ -42,8 +42,8 @@ def run_hfc(config):
     return hfc.run()
 
 @safe_run("Alerts")
-def run_alerts(config):
-    swa = alerts.SevereWeather(config)
+def run_alerts(config, ids):
+    swa = alerts.SevereWeather(config=config, ids=ids)
     return swa.run()
 
 def nom_nom_nom():
@@ -51,15 +51,20 @@ def nom_nom_nom():
     # Create config loader object
     config = Loader()
     # Create database injector
-    db = database.Inserter(config.db_config())
+    db = database.Inserter(config=config.db_config())
 
-    wfc_data = run_wfc(config.wfc_config())
+    # Run the work forecast scraper and insert into the work_forecast table.
+    wfc_data = run_wfc(config=config.wfc_config())
     db.insert(statement=db.wfc_statement(), data=wfc_data)
 
-    hfc_data = run_hfc(config.hfc_config())
+    # run the home forecast scraper and insert into the home_forecast table.
+    hfc_data = run_hfc(config=config.hfc_config())
     db.insert(statement=db.hfc_statement(), data=hfc_data)
 
-    swa_data = run_alerts(config.alerts_config())
+    # Pull a list of alert IDs from the alerts table.
+    prev_alerts = db.get_swa_ids()
+    # Check for new alerts and insert into alerts table.
+    swa_data = run_alerts(config=config.alerts_config(), ids=prev_alerts)
     if swa_data != None:
         db.insert(statement=db.swa_statement(), data=swa_data)
 

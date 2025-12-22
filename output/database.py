@@ -34,8 +34,33 @@ class Inserter:
     def swa_statement(self):
         """Build the insert statement for the severe weather alerts."""
         return """INSERT into alerts 
-            (updated, onset, ends, severity, certainty, event, headline, description, instruction) 
+            (updated, onset, ends, id, severity, certainty, event, headline, description) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+    
+    def get_swa_ids(self):
+        """Get a list of severe weather alert IDs from the alerts table."""
+        return """SELECT id from alerts;"""
+    
+    def query(self, statement):
+        """Connect to the database."""
+        try:
+            connection = psycopg2.connect(
+                user = self.db_user,
+                password = self.db_password,
+                host = self.db_host,
+                port = self.db_port,
+                database = self.db_name)
+            cursor = connection.cursor()
+            cursor.execute(statement)
+            records = cursor.fetchall()
+            connection.close()
+            return records
+        except Exception as e:
+            with open(self.LOG_PATH, "a") as log:
+                    log.write(f"\n[{datetime.now()}] Error inserting into table: {statement.split()[2]}\n")
+                    log.write(f"{e}\n")
+                    log.write(traceback.format_exc())
+                    log.write("\n" + "-"*60 + "\n")
 
     def insert(self, statement, data):
         """Connect to the database and insert data."""

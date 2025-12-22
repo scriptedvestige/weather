@@ -45,7 +45,7 @@ class Forecast:
             row.append(entry["isDaytime"])
             row.append(entry["temperature"])
             row.append(entry["probabilityOfPrecipitation"]["value"])
-            row.append(entry["windSpeed"].split()[-2])
+            row.append(float(entry["windSpeed"].split()[-2]))
             row.append(entry["windDirection"])
             row.append(entry["detailedForecast"])
             row.append(entry["icon"])
