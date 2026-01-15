@@ -57,7 +57,7 @@ def nom_nom_nom():
     wfc_data = run_wfc(config=config.wfc_config())
     db.insert(statement=db.wfc_statement(), data=wfc_data)
 
-    # run the home forecast scraper and insert into the home_forecast table.
+    # Run the home forecast scraper and insert into the home_forecast table.
     hfc_data = run_hfc(config=config.hfc_config())
     db.insert(statement=db.hfc_statement(), data=hfc_data)
 
