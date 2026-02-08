@@ -51,7 +51,7 @@ def nom_nom_nom():
     # Create config loader object
     config = Loader()
     # Create database injector
-    db = database.Inserter(config=config.db_config())
+    db = database.Insert(config=config.db_config())
 
     # Run the work forecast scraper and insert into the work_forecast table.
     wfc_data = run_wfc(config=config.wfc_config())

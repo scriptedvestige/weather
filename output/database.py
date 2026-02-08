@@ -8,7 +8,7 @@ import psycopg2
 import traceback
 
 
-class Inserter:
+class Insert:
     """Inject data fed to the module into the appropriate database table."""
     def __init__(self, config):
         self.LOG_PATH = log_path()
@@ -19,10 +19,13 @@ class Inserter:
         self.db_user = config["user"]
         self.db_password = config["password"]
 
+    def insert_statement(self):
+         """Insert data into the database."""
+
     def wfc_statement(self):
         """Build the insert statement for work forecast data."""
         return """INSERT into work_forecast 
-            (updated, starttime, isdaytime, temp, precip, windspeed, winddir, detail, icon) 
+            (updated, starttime, isdaytime, temp, precip, windspeed, winddir, humidity, shortfc) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
 
     def hfc_statement(self):

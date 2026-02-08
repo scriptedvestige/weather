@@ -28,12 +28,12 @@ class Forecast:
         filename = forecast_output(zone="work", date=filename_format())
         api_data = requests.get(url=self.url, headers=self.header).json()
         self.work_fc = api_data["properties"]["periods"]
-        self.save_file(filename=filename, forecast=self.work_fc)
+        ''' self.save_file(filename=filename, forecast=self.work_fc)
 
     def save_file(self, filename, forecast):
         """Save forcast data to json file."""
         with open(filename, "w") as file:
-            json.dump(forecast, file, indent=4)
+            json.dump(forecast, file, indent=4) '''
 
     def parse_data(self, data):
         """Parse the API response data."""
@@ -47,8 +47,8 @@ class Forecast:
             row.append(entry["probabilityOfPrecipitation"]["value"])
             row.append(float(entry["windSpeed"].split()[-2]))
             row.append(entry["windDirection"])
-            row.append(entry["detailedForecast"])
-            row.append(entry["icon"])
+            row.append(entry["relativeHumidity"]["value"])
+            row.append(entry["shortForecast"])
             fc.append(row)
         return fc
     

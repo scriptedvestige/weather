@@ -5,3 +5,4 @@ sql/
 w_venv/
 run.sh
 run.log
+changes.txt

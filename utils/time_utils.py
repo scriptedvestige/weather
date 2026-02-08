@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def iso_format():
     """Return current date in full ISO 8601 format."""
@@ -19,6 +19,6 @@ def filename_delta(count):
     return (datetime.now() + timedelta(days=count)).strftime("%Y%m%d")
 
 def current_date_time():
-    """Return current date and time in format yyyy-mm-dd hh:mm:ss"""
-    return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    """Return current date and time in format yyyy-mm-dd hh:mm:ss.  Time in UTC to match NWS data."""
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     
