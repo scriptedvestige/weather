@@ -46,24 +46,23 @@ class SevereWeather:
         with open(filename, "w") as file:
             json.dump(alerts, file, indent=4) '''
 
-    def parse_data(self, data, ids):
+    def parse_data(self, data):
         """Parse the data returned from the API call."""
         alerts = []
         if len(self.raw_alerts) > 0:
             for entry in data:
-                if entry["properties"]["id"] not in ids:
-                    row = []
-                    row.append(entry["properties"]["sent"])
-                    row.append(entry["properties"]["onset"])
-                    row.append(entry["properties"]["ends"])
-                    row.append(entry["properties"]["id"])
-                    row.append(entry["properties"]["severity"])
-                    row.append(entry["properties"]["certainty"])
-                    row.append(entry["properties"]["event"])
-                    row.append(entry["properties"]["parameters"]["NWSheadline"][0])
-                    desc = entry["properties"]["description"].replace("\n", " ")
-                    row.append(desc)
-                    alerts.append(row)
+                row = []
+                row.append(entry["properties"]["sent"])
+                row.append(entry["properties"]["onset"])
+                row.append(entry["properties"]["ends"])
+                row.append(entry["properties"]["id"])
+                row.append(entry["properties"]["severity"])
+                row.append(entry["properties"]["certainty"])
+                row.append(entry["properties"]["event"])
+                row.append(entry["properties"]["parameters"]["NWSheadline"][0])
+                desc = entry["properties"]["description"].replace("\n", " ")
+                row.append(desc)
+                alerts.append(row)
             return alerts
         else:
             return None
@@ -72,7 +71,7 @@ class SevereWeather:
         """Run the alerts module."""
         ids_list = self.list_ids()
         self.call_api()
-        return self.parse_data(data=self.raw_alerts, ids=ids_list)
+        return self.parse_data(data=self.raw_alerts)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from functools import wraps
 
 from utils.file_utils import log_path
 from config.loader import Loader
-from ingest import work, home
+from ingest import alerts
 from output import database
 
 LOG_PATH = log_path()
@@ -28,33 +28,18 @@ def safe_run(module_name):
         return wrapper
     return decorator
 
-# ----- MODULE RUNNERS ----- #
-@safe_run("Work Forecast")
-def run_wfc(config):
-    """Create and run work scraper."""
-    wfc = work.Forecast(config)
-    return wfc.run()
+# ----- MODULE RUNNER ----- #
+@safe_run("Alerts")
+def run_alerts(config, ids):
+    swa = alerts.SevereWeather(config=config, ids=ids)
+    return swa.run()
 
-@safe_run("Home Forecast")
-def run_hfc(config):
-    """Create and run home scraper."""
-    hfc = home.Forecast(config)
-    return hfc.run()
-
-def nom_nom_nom():
-    """I'm hongry!"""
-    # Create config loader object
+def scrape_alerts():
+     # Create config loader object
     config = Loader()
     # Create database injector
     db = database.Insert(config=config.db_config())
-
-    # Run the work forecast scraper and insert into the work_forecast table.
-    wfc_data = run_wfc(config=config.wfc_config())
-    db.insert(statement=db.wfc_statement(), data=wfc_data)
-
-    # Run the home forecast scraper and insert into the home_forecast table.
-    hfc_data = run_hfc(config=config.hfc_config())
-    db.insert(statement=db.hfc_statement(), data=hfc_data)
-
-if __name__ == "__main__":
-    nom_nom_nom()
+    # Check for new alerts and insert into alerts table.
+    swa_data = run_alerts(config=config.alerts_config())
+    if swa_data != None:
+        db.insert(statement=db.swa_statement(), data=swa_data)
