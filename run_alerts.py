@@ -43,3 +43,6 @@ def scrape_alerts():
     swa_data = run_alerts(config=config.alerts_config())
     if swa_data != None:
         db.insert(statement=db.swa_statement(), data=swa_data)
+
+if __name__ == "__main__":
+    scrape_alerts()
