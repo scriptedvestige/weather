@@ -40,9 +40,9 @@ class Insert:
             (updated, onset, ends, id, severity, certainty, event, headline, description) 
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     
-    def get_swa_ids(self):
+    def get_swa_data(self):
         """Get a list of severe weather alert IDs from the alerts table."""
-        return """SELECT id from alerts;"""
+        return """SELECT severity, certainty, event, headline, description from alerts order by updated desc limit 1;"""
     
     def query(self, statement):
         """Connect to the database."""
@@ -60,7 +60,7 @@ class Insert:
             return records
         except Exception as e:
             with open(self.LOG_PATH, "a") as log:
-                    log.write(f"\n[{datetime.now()}] Error inserting into table: {statement.split()[2]}\n")
+                    log.write(f"\n[{datetime.now()}] Error querying table: {statement.split()[2]}\n")
                     log.write(f"{e}\n")
                     log.write(traceback.format_exc())
                     log.write("\n" + "-"*60 + "\n")

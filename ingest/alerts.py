@@ -10,7 +10,7 @@ import json
 
 class SevereWeather:
     """Scrape alerts from the NWS alerts API."""
-    def __init__(self, config, ids):
+    def __init__(self, config, prev_alert):
         # Date
         self.yesterday = iso_delta(-1)
         # Config
@@ -19,7 +19,7 @@ class SevereWeather:
         self.table = config["table"]
         # Data
         self.raw_alerts = {}
-        self.prev_alerts = ids
+        self.prev_alert = prev_alert
 
     def list_ids(self):
         """Pull the IDs out of the list of tuples."""
@@ -46,7 +46,7 @@ class SevereWeather:
         with open(filename, "w") as file:
             json.dump(alerts, file, indent=4) '''
 
-    def parse_data(self, data):
+    def parse_data(self, data, prev_alert):
         """Parse the data returned from the API call."""
         alerts = []
         if len(self.raw_alerts) > 0:
@@ -62,16 +62,16 @@ class SevereWeather:
                 row.append(entry["properties"]["parameters"]["NWSheadline"][0])
                 desc = entry["properties"]["description"].replace("\n", " ")
                 row.append(desc)
-                alerts.append(row)
+                alerts.append(row) 
             return alerts
         else:
             return None
 
     def run(self):
         """Run the alerts module."""
-        ids_list = self.list_ids()
-        self.call_api()
-        return self.parse_data(data=self.raw_alerts)
+        print(self.prev_alert)
+        #self.call_api()
+        #return self.parse_data(data=self.raw_alerts, prev_alert=self.prev_alert)
 
 
 if __name__ == "__main__":
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     from config import loader
     from output import database
     config = loader.Loader()
-    db = database.Inserter(config=config.db_config())
-    prev_alerts = db.query(db.get_swa_ids())
-    swa = SevereWeather(config=config.alerts_config(), ids=prev_alerts)
+    db = database.Insert(config=config.db_config())
+    prev_alert = db.query(db.get_swa_data())
+    swa = SevereWeather(config=config.alerts_config(), prev_alert=prev_alert)
     swa.run()
