@@ -38,7 +38,8 @@ class Insert:
         """Build the insert statement for the severe weather alerts."""
         return """INSERT into alerts 
             (updated, onset, ends, id, severity, certainty, event, headline, description) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            ON CONFLICT (updated, onset, id) DO NOTHING;"""
     
     def get_swa_data(self):
         """Get a list of severe weather alert IDs from the alerts table."""
