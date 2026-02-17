@@ -45,6 +45,7 @@ def nom_nom_nom():
     """I'm hongry!"""
     # Create config loader object
     config = Loader()
+    
     # Create database injector
     db = database.Insert(config=config.db_config())
 

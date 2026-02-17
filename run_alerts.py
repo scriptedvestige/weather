@@ -30,17 +30,22 @@ def safe_run(module_name):
 
 # ----- MODULE RUNNER ----- #
 @safe_run("Alerts")
-def run_alerts(config, ids):
-    swa = alerts.SevereWeather(config=config, ids=ids)
+def run_alerts(config, prev_alert):
+    swa = alerts.SevereWeather(config=config, prev_alert=prev_alert)
     return swa.run()
 
 def scrape_alerts():
      # Create config loader object
     config = Loader()
+    
     # Create database injector
     db = database.Insert(config=config.db_config())
+
+    # Pull last alert
+    prev_alert = db.query(db.get_swa_data())
+    
     # Check for new alerts and insert into alerts table.
-    swa_data = run_alerts(config=config.alerts_config())
+    swa_data = run_alerts(config=config.alerts_config(), prev_alert=prev_alert)
     if swa_data != None:
         db.insert(statement=db.swa_statement(), data=swa_data)
 

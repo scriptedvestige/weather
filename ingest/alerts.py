@@ -24,7 +24,7 @@ class SevereWeather:
     def list_ids(self):
         """Pull the IDs out of the list of tuples."""
         all_ids = []
-        for tup in self.prev_alerts:
+        for tup in self.prev_alert:
             all_ids.append(tup[0])
         return all_ids
 
@@ -63,13 +63,11 @@ class SevereWeather:
                 desc = entry["properties"]["description"].replace("\n", " ")
                 row.append(desc)
                 alerts.append(row)
-            for entry in prev_alert[0]:
-                if entry[0] != alerts[0][4] or entry[1] != alerts[0][5] or entry[2] != alerts[0][6]:
-                    return alerts
-                else:
-                    return None
-        else:
-            return None
+            if prev_alert[0][0] != alerts[0][4] or prev_alert[0][1] != alerts[0][5] or prev_alert[0][2] != alerts[0][6]:
+                print("New data found!")
+                return alerts
+            else:
+                return None
 
     def run(self):
         """Run the alerts module."""
