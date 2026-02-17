@@ -62,16 +62,19 @@ class SevereWeather:
                 row.append(entry["properties"]["parameters"]["NWSheadline"][0])
                 desc = entry["properties"]["description"].replace("\n", " ")
                 row.append(desc)
-                alerts.append(row) 
-            return alerts
+                alerts.append(row)
+            for entry in prev_alert[0]:
+                if entry[0] != alerts[0][4] or entry[1] != alerts[0][5] or entry[2] != alerts[0][6]:
+                    return alerts
+                else:
+                    return None
         else:
             return None
 
     def run(self):
         """Run the alerts module."""
-        print(self.prev_alert)
-        #self.call_api()
-        #return self.parse_data(data=self.raw_alerts, prev_alert=self.prev_alert)
+        self.call_api()
+        return self.parse_data(data=self.raw_alerts, prev_alert=self.prev_alert)
 
 
 if __name__ == "__main__":
