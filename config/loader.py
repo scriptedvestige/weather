@@ -62,7 +62,7 @@ class Loader:
         """Return the alerts configuration."""
         return {
             "header": self.config["header"],
-            "url": self.config["alerts"]["url"],
+            "url": [self.config["alerts"]["url"], self.config["fire"]["url"]],
             "table": self.config["alerts"]["table"]
         }
         
