@@ -42,7 +42,7 @@ def scrape_alerts():
     db = database.Insert(config=config.db_config())
 
     # Pull last alert
-    prev_alert = db.query(db.get_swa_data())
+    prev_alert = db.query(db.get_swa_new())
     
     # Check for new alerts and insert into alerts table.
     swa_data = run_alerts(config=config.alerts_config(), prev_alert=prev_alert)
