@@ -6,4 +6,4 @@ w_venv/
 run.sh
 run_swa.sh
 run.log
-changes.txt
+changes.txt.DS_Store

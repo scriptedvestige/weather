@@ -1,0 +1,15 @@
+01/30/2026
+ - Changed work forecast to hourly
+ - Changed fields being parsed to match home forecast
+ - Changed table schema to match home forecast
+ - Changed table insertion statement to match home forecast
+
+TO DO:
+ - Consolidate scrapers for home and work data into one function
+ - Consolidate SQL insert statments for home and work data
+ -
+
+ 02/16/2026
+  - Split severe weather alerts into separate orchestrator and bash script.
+  - Also fixed some weird no ID duplicates dumbness in the severe weather alerts logic.
+  - Need to create second cron job for that which runs more frequently.
