@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append(".")
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from utils.time_utils import iso_delta, filename_format
-from utils.file_utils import forecast_output
+from utils.time_utils import iso_delta
 import requests
-import json
 
 
 class SevereWeather:
@@ -15,74 +14,66 @@ class SevereWeather:
         self.yesterday = iso_delta(-1)
         # Config
         self.header = config["header"]
-        self.url = config["url"]
+        self.urls = config["url"]
         self.table = config["table"]
         # Data
-        self.raw_alerts = {}
-        self.prev_alert = prev_alert
+        self.alerts = []
+        self.prev_alert = prev_alert or []
+        # Build a set of (onset, ends, event, description) tuples for fast lookup.
+        self.prev_keys = set(self.prev_alert)
 
-    def list_ids(self):
-        """Pull the IDs out of the list of tuples."""
-        all_ids = []
-        for tup in self.prev_alert:
-            all_ids.append(tup[0])
-        return all_ids
-
-    def update_url(self):
-        """Modify the URL with current start date."""
-        current = f"{self.yesterday}T00:00:00-08:00"
-        return self.url.format(start=current)
+    def update_url(self, url):
+        """Modify the URL with current start date, in UTC to match the NWS API and avoid DST issues."""
+        current = f"{self.yesterday}T00:00:00Z"
+        return url.format(start=current)
 
     def call_api(self):
-        """Call API and write data to json file."""
-        updated_url = self.update_url()
-        api_data = requests.get(url=updated_url, headers=self.header).json()
-        self.raw_alerts = api_data["features"]
-        ''' filename = forecast_output(zone="alerts", date=filename_format())
-        self.save_file(filename=filename, alerts=self.raw_alerts)
+        """Call each configured endpoint and parse the results."""
+        for entry in self.urls:
+            updated_url = self.update_url(entry)
+            response = requests.get(url=updated_url, headers=self.header, timeout=15)
+            response.raise_for_status()
+            api_data = response.json()
+            self.parse_data(data=api_data["features"])
 
-    def save_file(self, filename, alerts):
-        """Save alerts data to json file.  For testing and debug."""
-        with open(filename, "w") as file:
-            json.dump(alerts, file, indent=4) '''
-
-    def parse_data(self, data, prev_alert):
-        """Parse the data returned from the API call."""
-        alerts = []
-        if len(self.raw_alerts) > 0:
-            for entry in data:
-                row = []
-                row.append(entry["properties"]["sent"])
-                row.append(entry["properties"]["onset"])
-                row.append(entry["properties"]["ends"])
-                row.append(entry["properties"]["id"])
-                row.append(entry["properties"]["severity"])
-                row.append(entry["properties"]["certainty"])
-                row.append(entry["properties"]["event"])
-                row.append(entry["properties"]["parameters"]["NWSheadline"][0])
-                desc = entry["properties"]["description"].replace("\n", " ")
-                row.append(desc)
-                alerts.append(tuple(row))
-        else:
-            return None
-        if len(alerts) > 0:
-            if prev_alert[0][0] != alerts[0][4] or prev_alert[0][1] != alerts[0][5] or prev_alert[0][2] != alerts[0][6] or prev_alert[0][3] != alerts[0][7] or prev_alert[0][4] != alerts[0][8]:
-                return alerts
-            else:
-                return None
+    def parse_data(self, data):
+        """Parse the data returned from the API call. An alert is only inserted
+        if its onset/ends/event/description combination hasn't already been seen —
+        this catches genuinely new or changed alerts even though NWS assigns
+        a new ID to every update of the same underlying alert."""
+        for entry in data:
+            props = entry["properties"]
+            onset = props["onset"]
+            ends = props["ends"]
+            event = props["event"]
+            desc = (props["description"] or "").replace("\n", " ")
+            key = (onset, ends, event, desc)
+            if key not in self.prev_keys:
+                headline_list = props.get("parameters", {}).get("NWSheadline", [""])
+                headline = headline_list[0] if headline_list else ""
+                row = (
+                    props["sent"],
+                    onset,
+                    ends,
+                    props["id"],
+                    props["severity"],
+                    props["certainty"],
+                    event,
+                    headline,
+                    desc,
+                )
+                self.alerts.append(row)
+                self.prev_keys.add(key)  # avoid inserting the same content twice within one run, across multiple endpoints
 
     def run(self):
         """Run the alerts module."""
         self.call_api()
-        return self.parse_data(data=self.raw_alerts, prev_alert=self.prev_alert)
+        return self.alerts
 
 
 if __name__ == "__main__":
     """Testing."""
     from config import loader
-    from output import database
     config = loader.Loader()
-    db = database.Insert(config=config.db_config())
-    prev_alert = db.query(db.get_swa_data())
-    swa = SevereWeather(config=config.alerts_config(), prev_alert=prev_alert)
-    swa.run()
+    swa = SevereWeather(config=config.alerts_config(), prev_alert=[])
+    print(swa.run())

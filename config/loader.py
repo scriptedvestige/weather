@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append(".")
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from utils.file_utils import config_path
+from utils.file_utils import config_path, env_path
 from dotenv import load_dotenv
 import json
 import os
@@ -15,7 +16,7 @@ class Loader:
     """
     def __init__(self):
         # Load .env
-        load_dotenv()
+        load_dotenv(dotenv_path=env_path())
         self.db_name = os.getenv("DB_NAME")
         self.db_host = os.getenv("DB_HOST")
         self.db_port = os.getenv("DB_PORT")
@@ -26,14 +27,18 @@ class Loader:
             raise ValueError("Missing required database environment variables.")
         # NWS Config File
         self.path = config_path("nws")
-        self.config = self._load_json()
+        self.config = self.load_json()
 
-    def _load_json(self):
-        with open(self.path, "r") as config:
-            return json.load(config)
+    def load_json(self):
+        """Load the NWS config file."""
+        try:
+            with open(self.path, "r") as config:
+                return json.load(config)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            raise ValueError(f"Failed to load NWS config at {self.path}: {e}")
 
     def db_config(self):
-        """Return databse config data."""
+        """Return database config data."""
         return {
             "host": self.db_host,
             "port": self.db_port,
@@ -62,7 +67,7 @@ class Loader:
         """Return the alerts configuration."""
         return {
             "header": self.config["header"],
-            "url": self.config["alerts"]["url"],
+            "url": [self.config["alerts"]["url"], self.config["fire"]["url"]],
             "table": self.config["alerts"]["table"]
         }
         

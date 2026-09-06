@@ -45,6 +45,11 @@ class Insert:
         """Get a list of severe weather alert IDs from the alerts table."""
         return """SELECT severity, certainty, event, headline, description from alerts order by updated desc limit 1;"""
     
+    def get_swa_new(self):
+        """Get a list of severe weather alert IDs from the alerts table."""
+        return """SELECT id from alerts where ends >= NOW() order by updated desc;"""
+    
+
     def query(self, statement):
         """Connect to the database."""
         try:
