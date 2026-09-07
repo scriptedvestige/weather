@@ -1,0 +1,64 @@
+Work Forecast Columns
+ - updated     # date & time forecast scraped
+ - starttime
+ - isdaytime
+ - temp
+ - precip
+ - windspeed
+ - winddir
+ - humidity
+ - shortfc
+
+Home Forecast Columns
+ - updated
+ - starttime
+ - isdaytime
+ - temp
+ - precip
+ - windspeed
+ - winddir
+ - humidity
+ - shortfc
+
+Severe Weather Alerts Columns
+ - updated
+ - onset
+ - ends
+ - severity
+ - certainty
+ - event
+ - headline
+ - description
+ - instruction
+
+Home Weather Station Observations Columns
+ - time
+ - baromabsin 
+ - tempf 
+ - humidity 
+ - winddir 
+ - windspeedmph
+ - windgustmph
+ - maxdailygust
+ - solarradiation
+ - uv
+ - rainratein
+ - eventrainin
+
+Rain Tracker Columns
+ - time
+ - hourlyrainin
+ - dailyrainin
+ - weeklyrainin
+ - monthlyrainin
+ - yearlyrainin
+
+Console Sensor Columns
+ - time
+ - tempinf
+ - humidityin
+
+Office Sensor Columns
+ - time
+ - temp2f
+ - humidity2

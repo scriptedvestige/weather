@@ -1,10 +1,7 @@
 *.json
 **/__pycache__/
 config/.env
-sql/
 w_venv/
-run.sh
-run_swa.sh
 run.log
 changes.txt
 .DS_Store
