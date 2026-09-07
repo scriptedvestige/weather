@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append(".")
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from utils.time_utils import iso_format, filename_format, current_date_time
-from utils.file_utils import forecast_output
+from utils.time_utils import iso_format, current_date_time
 import requests
-import json
 
 
-class Forecast:
+class Forecast():
     """
-    Scrape the NWS forecast API for work.
-    Eww, work. -_-
+    Scrape the observed conditions NWS API for home.
+    Home, sweet home!
     """
     def __init__(self, config):
         # Date
@@ -21,19 +20,14 @@ class Forecast:
         self.url = config["url"]
         self.table = config["table"]
         # Data
-        self.work_fc = {}
+        self.home_fc = {}
 
     def call_api(self):
-        """Call API and write data to forecast.txt"""
-        filename = forecast_output(zone="work", date=filename_format())
-        api_data = requests.get(url=self.url, headers=self.header).json()
-        self.work_fc = api_data["properties"]["periods"]
-        ''' self.save_file(filename=filename, forecast=self.work_fc)
-
-    def save_file(self, filename, forecast):
-        """Save forcast data to json file."""
-        with open(filename, "w") as file:
-            json.dump(forecast, file, indent=4) '''
+        """Call the API and store the returned forecast periods."""
+        response = requests.get(url=self.url, headers=self.header, timeout=15)
+        response.raise_for_status()
+        api_data = response.json()
+        self.home_fc = api_data["properties"]["periods"]
 
     def parse_data(self, data):
         """Parse the API response data."""
@@ -51,15 +45,16 @@ class Forecast:
             row.append(entry["shortForecast"])
             fc.append(row)
         return fc
-    
+
     def run(self):
         """Run the forecast scraper and return the forecast data."""
         self.call_api()
-        return self.parse_data(self.work_fc)
-    
+        return self.parse_data(self.home_fc)
+
 
 if __name__ == "__main__":
+    ### Testing ###
     from config import loader
     config = loader.Loader()
-    wfc = Forecast(config.wfc_config())
-    wfc.run()
+    hfc = Forecast(config.hfc_config())
+    hfc.run()

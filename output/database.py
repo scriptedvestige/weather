@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append(".")
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from utils.file_utils import log_path
 from datetime import datetime
@@ -18,9 +19,6 @@ class Insert:
         self.db_name = config["database"]
         self.db_user = config["user"]
         self.db_password = config["password"]
-
-    def insert_statement(self):
-         """Insert data into the database."""
 
     def wfc_statement(self):
         """Build the insert statement for work forecast data."""
@@ -41,56 +39,60 @@ class Insert:
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
             ON CONFLICT (updated, onset, id) DO NOTHING;"""
     
-    def get_swa_data(self):
-        """Get a list of severe weather alert IDs from the alerts table."""
-        return """SELECT severity, certainty, event, headline, description from alerts order by updated desc limit 1;"""
-    
     def get_swa_new(self):
-        """Get a list of severe weather alert IDs from the alerts table."""
-        return """SELECT id from alerts where ends >= NOW() order by updated desc;"""
-    
+        """Get onset/ends/event/description for currently active alerts, used for content-based dedup."""
+        return """SELECT onset, ends, event, description from alerts where ends >= NOW() order by updated desc;"""
 
     def query(self, statement):
-        """Connect to the database."""
+        """Connect to the database and run a SELECT statement."""
+        connection = None
         try:
             connection = psycopg2.connect(
-                user = self.db_user,
-                password = self.db_password,
-                host = self.db_host,
-                port = self.db_port,
-                database = self.db_name)
+                user=self.db_user,
+                password=self.db_password,
+                host=self.db_host,
+                port=self.db_port,
+                database=self.db_name)
             cursor = connection.cursor()
             cursor.execute(statement)
             records = cursor.fetchall()
-            connection.close()
+            cursor.close()
             return records
         except Exception as e:
             with open(self.LOG_PATH, "a") as log:
-                    log.write(f"\n[{datetime.now()}] Error querying table: {statement.split()[2]}\n")
-                    log.write(f"{e}\n")
-                    log.write(traceback.format_exc())
-                    log.write("\n" + "-"*60 + "\n")
+                log.write(f"\n[{datetime.now()}] Error querying table: {statement.split()[2]}\n")
+                log.write(f"{e}\n")
+                log.write(traceback.format_exc())
+                log.write("\n" + "-"*60 + "\n")
+            raise
+        finally:
+            if connection is not None:
+                connection.close()
 
     def insert(self, statement, data):
         """Connect to the database and insert data."""
+        connection = None
         try:
             connection = psycopg2.connect(
-                user = self.db_user,
-                password = self.db_password,
-                host = self.db_host,
-                port = self.db_port,
-                database = self.db_name)
+                user=self.db_user,
+                password=self.db_password,
+                host=self.db_host,
+                port=self.db_port,
+                database=self.db_name)
             cursor = connection.cursor()
             cursor.executemany(statement, data)
             connection.commit()
             cursor.close()
-            connection.close()
         except Exception as e:
             with open(self.LOG_PATH, "a") as log:
-                    log.write(f"\n[{datetime.now()}] Error inserting into table: {statement.split()[2]}\n")
-                    log.write(f"{e}\n")
-                    log.write(traceback.format_exc())
-                    log.write("\n" + "-"*60 + "\n")
+                log.write(f"\n[{datetime.now()}] Error inserting into table: {statement.split()[2]}\n")
+                log.write(f"{e}\n")
+                log.write(traceback.format_exc())
+                log.write("\n" + "-"*60 + "\n")
+            raise
+        finally:
+            if connection is not None:
+                connection.close()
 
 
 if __name__ == "__main__":
@@ -100,4 +102,3 @@ if __name__ == "__main__":
     inj = Inserter(cfg.db_config())
     stmt = inj.wfc_statement()
     inj.insert() """
-    
