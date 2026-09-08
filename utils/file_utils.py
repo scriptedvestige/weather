@@ -24,4 +24,4 @@ def forecast_output(zone, date):
 
 def env_path():
     """Path to the project's .env file."""
-    return root_dir() / ".env"
+    return root_dir() / "config" / ".env"
