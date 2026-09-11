@@ -10,4 +10,4 @@ cd "$DIR" || { echo "Failed to cd to project dir" >> "$LOG"; exit 1; }
 
 echo "Finished SWA At: $(date)" >> "$LOG" 2>&1
 
-echo "--------------------" >> "$LOG" 2>&1
+echo "------------------------------------------------------------" >> "$LOG" 2>&1
